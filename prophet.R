@@ -1,34 +1,32 @@
-#individual factors prediction
+#selected factors prediction
 
 library(prophet)
 library(dplyr)
 
-#always two columns ds and y
-type_h1,type_h3,type_b,type_c,type_all,
-deaths,chinese_med,Google.Data
-
-df <- data.frame(cbind(influ$date,influ$type_h1))
+#data loading
+df <- select(influ,date,type_all)
 colnames(df) <- c("ds","y")
-#df$y = log(df$y)
+#data transformation
+df$y = log(df$y)
 
-m <- prophet(df)
+m <- prophet(df, yearly.seasonality = TRUE)
 
-future <- make_future_dataframe(m, periods = 365)
+#creating future dates
+future <- make_future_dataframe(m, periods = 750)
 tail(future)
-head(future)
 
+#apply model to predict
 forecast <- predict(m, future)
 tail(forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
-head(forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
 
+#visual plots
 plot(m, forecast)
 prophet_plot_components(m, forecast)
 
+type_all_pred <- select(forecast,ds,yhat)
+#type_all_pred$yhat <- exp(type_all_pred$yhat)
+
+Google.Data_pred <- select(forecast,ds,yhat)
+chinese_med_pred <- select(forecast,ds,yhat)
 
 
-########  seasonality
-m <- prophet(daily.seasonality=TRUE)
-#m <- add_seasonality(m, name='monthly', period=30.5, fourier.order=5)
-m <- fit.prophet(m, df)
-forecast <- predict(m, future)
-prophet_plot_components(m, forecast)

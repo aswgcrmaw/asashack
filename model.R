@@ -281,3 +281,6 @@ when t.business_date <= 20161225 then 201652
 when t.business_date <= 20170101 then 201653
 end
 ")
+
+type_h1,type_h3,type_b,type_c,type_all,
+deaths,chinese_med,Google.Data
